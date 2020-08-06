@@ -1,8 +1,10 @@
 const express = require('express');
-
+const cors = require('cors');
 const app = express();
 app.use(express.urlencoded({extended: false}));
 app.use(express.json());
+
+app.use(cors());
 
 const database = {
 	users:[
@@ -10,6 +12,7 @@ const database = {
 		id: '123',
 		name: 'John',
 		email: 'john@gmail.com',
+		password: 'cookies',
 		entries:0,
 		joined:new Date()
 	},
@@ -17,9 +20,17 @@ const database = {
 		id: '124',
 		name: 'Sally',
 		email: 'Sally@gmail.com',
+		password: 'bananas',
 		entries:0,
 		joined:new Date()
-	}]
+	}],
+	login:[
+	{
+		id:'',
+		hash:'',
+		email:'john@gmail.com'
+	}
+	]
 }
 
 app.get('/',(req,res)=>{
@@ -30,7 +41,7 @@ app.get('/',(req,res)=>{
 app.post('/signin',(req,res)=>{
 	if(req.body.email === database.users[0].email&&
 		req.body.password=== database.users[0].password){
-		res.json('success')
+		res.json(database.users[0])
 	}else{
 		res.status(400).json('error logging in');
 	}
@@ -43,7 +54,6 @@ app.post('/register',(req,res)=>{
 		id: '125',
 		name: name,
 		email: email,
-		password:password,
 		entries:0,
 		joined:new Date()
 
@@ -84,6 +94,8 @@ app.put('/image',(req,res)=>{
 		res.status(400).json('not found');
 	}
 })
+
+
 
 
 app.listen(3000,()=>{

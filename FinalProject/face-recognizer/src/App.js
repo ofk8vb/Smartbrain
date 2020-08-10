@@ -6,14 +6,11 @@ import './App.css';
 import Rank from './Components/Rank/Rank.js'
 import Particles from 'react-particles-js';
 import {Component} from 'react';
-import Clarifai from 'clarifai';
 import FaceRecognition from './Components/FaceRecognition/FaceRecognition.js'
 import Signin from './Components/Signin/Signin.js'
 import Register from './Components/Register/Register.js'
 
-const app = new Clarifai.App({
-  apiKey: 'cbe840c37fa54260afb79b8c942484d1'
-});
+
 
 const particlesOptions ={
   particles: {
@@ -28,27 +25,29 @@ const particlesOptions ={
     
   }
 }
-
+const initialState = {
+    input: '',
+    imageUrl:'',
+    box:{},
+    route:'signin',
+    isSignedIn: false,
+    user:{
+      id:'',
+      name:'',
+      email:'',
+      entries:0,
+      joined: ''
+    }
+}
 class App extends Component {
 
   constructor(){
     super();
-    this.state ={
-      input: '',
-      imageUrl:'',
-      box:{},
-      route:'signin',
-      isSignedIn: false,
-      user:{
-        id:'',
-        name:'',
-        email:'',
-        entries:0,
-        joined: ''
-      }
+    this.state = initialState;
+      
 
     }
-  }
+  
 
   loadUser = (data) =>{
     this.setState({user:{
@@ -90,10 +89,15 @@ class App extends Component {
 
   onButtonSubmit=()=>{
     this.setState({imageUrl:this.state.input});
-    app.models.predict(
-      Clarifai.FACE_DETECT_MODEL,
-    this.state.input)
-    .then((response) =>{
+    fetch('http://localhost:3000/imageUrl',{
+          method:'post',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({
+            input: this.state.input
+        })
+      })
+      .then(response=>response.json())
+      .then((response) =>{
       if(response){
         fetch('http://localhost:3000/image',{
           method:'put',
@@ -104,9 +108,6 @@ class App extends Component {
         })
         .then(response=>response.json())
         .then(count=>{
-
-          //serverdan gelen guncellenmis entriesi alip programimizi
-          //guncelliyoruz.
           this.setState(Object.assign(this.state.user,{ entries:count}))
         })
 
@@ -119,7 +120,7 @@ class App extends Component {
 
   onRouteChange=(route)=>{
     if(route ==='signout'){
-      this.setState({isSignedIn:false})
+      this.setState({initialState})
     } else if(route === 'home'){
       this.setState({isSignedIn: true})
     }

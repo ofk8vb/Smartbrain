@@ -89,7 +89,7 @@ class App extends Component {
 
   onButtonSubmit=()=>{
     this.setState({imageUrl:this.state.input});
-    fetch('https://salty-ravine-28481.herokuapp.com/imageUrl',{
+    fetch('https://lit-gorge-20097.herokuapp.com/imageUrl',{
           method:'post',
           headers:{'Content-Type':'application/json'},
           body:JSON.stringify({
@@ -99,7 +99,7 @@ class App extends Component {
       .then(response=>response.json())
       .then((response) =>{
       if(response){
-        fetch('https://salty-ravine-28481.herokuapp.com/image',{
+        fetch('https://lit-gorge-20097.herokuapp.com/image',{
           method:'put',
           headers:{'Content-Type':'application/json'},
           body:JSON.stringify({
